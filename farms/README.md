@@ -89,7 +89,7 @@ A command-line tool for on-chain data management (init/upload/delete/lookup) and
 
 A Vault contract implementation. Individual yield farming strategies are stored under the `strategies` sub-folder. `RDM-STAKE-LP-COMPOUND` strategy works as follows:
 
-- User deposits tokens into a Vault with add_liquidity transaction. For example, Vault `RDM.STC.RAY-SRM` takes RAY and SRM tokens. To get a list of available Vaults, one can use the `client.get_vaults()` function or `api/v1/vaults` RPC call. Vault tokens are minted back to the user to represent his share in the Vault.
+- User deposits tokens into a Vault with add_liquidity transaction. For example, Vault `RDM.STC.RAY-SRM` takes RAY and SRM tokens. To get a list of available Vaults, one can use the `client.get_vaults()` function or `api/v1/vaults` RPC call. Vault tokens are minted back to the user to represent their share in the Vault.
 - Vault sends user tokens to the corresponding Raydium Pool, receives LP tokens, and stakes them to the Raydium Farm.
 - Vaults should be cranked on a periodic basis. Crank operation is permissionless and can be done by anyone. And it is executed for the entire Vault, not per individual user. Crank consists of three steps: 1. Harvest Farm rewards (in one or both tokens); 2. Rebalance rewards to get proper amounts of each token; 3. Place rewards back into the Pool and stake received LP tokens. A small Vault fee is taken from rewards, and it can be used to incentivize Crank operations.
 - Upon liquidity removal, the user gets original tokens back in amounts proportional to Vault tokens they hold. Vault tokens are then burned.
@@ -241,6 +241,19 @@ Farm client can be used to perform all DAO operations: create proposals, deposit
 
 ```sh
 solana-farm-client governance help
+```
+
+As part of DAO initialization, SOL token custody will be created (and more tokens can be added permissionless). Custody can be used to govern all interactions with pools, farms, or vaults. It is useful if a third party manages funds, and every operation must be voted on first. Farm client simplifies instruction creation and verification process, here is a workflow example for already initialized DAO:
+
+```sh
+solana-farm-client governance proposal-new FarmCustodyGovernance SwapTokens http://description.com 0
+solana-farm-client governance signatory-add FarmCustodyGovernance 0 J7paVZ8axBfUaGFDNknc7XF3GHjVLZzvL57FaCuxjJo7
+solana-farm-client governance instruction-insert-swap FarmCustodyGovernance 0 0 RDM RAY SRM 1.0 0.0
+solana-farm-client -k signer.json governance sign-off FarmCustodyGovernance 0
+solana-farm-client -k voter.json governance instruction-verify-swap FarmCustodyGovernance 0 0 RDM RAY SRM 1.0 0.0
+solana-farm-client -k voter.json governance vote-cast FarmCustodyGovernance 0 1
+solana-farm-client governance vote-finalize FarmCustodyGovernance 0
+solana-farm-client -k anyone.json governance instruction-execute FarmCustodyGovernance 0 0
 ```
 
 ## Disclaimer
