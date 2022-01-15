@@ -92,3 +92,9 @@ If you are testing a production build, use:
 ```sh
 SWAP_PROGRAM_OWNER_FEE_ADDRESS="HfoTxFR1Tm6kGmWgYWD6J7YHVy1UwqSULUGVLXkJqaKN" npm run start-with-test-validator
 ```
+
+
+## my swap
+
+feeAddress: FeexwZkhovirx57JHYKjAJ6NzbQQdofzgRLWj4sFBUXB
+devnet: SWHMnhEsh3z6Ta9wvwfj3tVMg4UuEBnHRdYaDpv2LWT
