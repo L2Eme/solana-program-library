@@ -41,11 +41,20 @@ impl TryFrom<COption<Pubkey>> for OptionalNonZeroPubkey {
     }
 }
 impl From<OptionalNonZeroPubkey> for Option<Pubkey> {
-    fn from(p: OptionalNonZeroPubkey) -> Option<Pubkey> {
+    fn from(p: OptionalNonZeroPubkey) -> Self {
         if p.0 == Pubkey::default() {
             None
         } else {
             Some(p.0)
+        }
+    }
+}
+impl From<OptionalNonZeroPubkey> for COption<Pubkey> {
+    fn from(p: OptionalNonZeroPubkey) -> Self {
+        if p.0 == Pubkey::default() {
+            COption::None
+        } else {
+            COption::Some(p.0)
         }
     }
 }
@@ -61,6 +70,12 @@ impl From<bool> for PodBool {
 }
 impl From<&PodBool> for bool {
     fn from(b: &PodBool) -> Self {
+        b.0 != 0
+    }
+}
+
+impl From<PodBool> for bool {
+    fn from(b: PodBool) -> Self {
         b.0 != 0
     }
 }
